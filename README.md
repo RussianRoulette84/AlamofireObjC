@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-5.12-orange?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-5.12.1-orange?style=for-the-badge)
 ![Swift](https://img.shields.io/badge/Swift-5.10-orange?style=for-the-badge&logo=swift&logoColor=white)
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%20·%20macOS%20·%20tvOS%20·%20watchOS-lightgrey?style=for-the-badge&logo=apple&logoColor=white)
 ![SwiftPM](https://img.shields.io/badge/SwiftPM-compatible-success?style=for-the-badge&logo=swift&logoColor=white)
@@ -26,7 +26,10 @@
 Alamofire is Swift-only and [AFNetworking is deprecated/archived](https://github.com/AFNetworking/AFNetworking) (since Jan 2023). `AlamofireObjC` bridges the gap: a clean `@objc` API exposing Alamofire's full feature set to Objective-C, plus an AFNetworking-style facade for near drop-in migration.
 
 **Original library:** [Alamofire/Alamofire](https://github.com/Alamofire/Alamofire) (Swift). `AlamofireObjC` is an `@objc` bridge on top of it — it does not fork or vendor Alamofire, it depends on it.
-**Versioning:** `AlamofireObjC`'s version tracks the Alamofire it wraps — **5.12.x ↔ Alamofire 5.12.x**.
+**Versioning:** the major.minor mirrors the Alamofire it wraps; the last component is ours.
+So `5.12.1`, `5.12.2`, … all track **Alamofire 5.12**, and when Alamofire ships 5.13 we move to
+`5.13.1`. (Note: Alamofire only publishes to CocoaPods up to **5.9.1** — SPM/Carthage get the
+real 5.12; CocoaPods installs 5.9.1, which our code is compatible with.)
 
 **Warning**: Claude made it while I held it's hand
 
@@ -78,7 +81,7 @@ pod 'AlamofireObjC', '~> 5.12'
 
 ### Swift Package Manager
 ```
-https://github.com/RussianRoulette84/AlamofireObjC.git  →  from: 5.12.0
+https://github.com/RussianRoulette84/AlamofireObjC.git  →  from: 5.12.1
 ```
 
 ### Carthage
