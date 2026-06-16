@@ -13,12 +13,12 @@
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════╗
 ║                                                                                  ║
-║   IF    you're the kind of guy who uses AFNetworking/Alamofire for decades now   ║
+║   IF    you're the kind of guy who uses AFNetworking/Alamofire for decades       ║
 ║                                                                                  ║
 ║   AND   refuses to abandone Objective C in favor of the                          ║
 ║         "I can't make up my mind?(?)!" language, called Swift                    ║
 ║                                                                                  ║
-║   THEN  this repoo is for you :)                                                 ║
+║   THEN  this repoo is for you 😎                                                 ║
 ║                                                                                  ║
 ╚══════════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -27,6 +27,8 @@ Alamofire is Swift-only and [AFNetworking is deprecated/archived](https://github
 
 **Original library:** [Alamofire/Alamofire](https://github.com/Alamofire/Alamofire) (Swift). `AlamofireObjC` is an `@objc` bridge on top of it — it does not fork or vendor Alamofire, it depends on it.
 **Versioning:** `AlamofireObjC`'s version tracks the Alamofire it wraps — **5.12.x ↔ Alamofire 5.12.x**.
+
+**Warning**: Claude made it while I held it's hand
 
 # Extra
 
