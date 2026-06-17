@@ -48,6 +48,11 @@ public final class AFOHTTPSessionManager: NSObject {
         AFOHTTPSessionManager(baseURL: baseURL)
     }
 
+    /// Cancel every in-flight request on this manager's session.
+    @objc public func cancelAllRequests() {
+        _session?.cancelAllRequests()
+    }
+
     // MARK: - Verb methods
 
     @discardableResult
@@ -125,8 +130,13 @@ public final class AFOHTTPSessionManager: NSObject {
         var merged = defaultHeaders
         headers?.forEach { merged[$0.key] = $0.value }
 
+        // GET/HEAD carry no request body — their parameters must go in the URL
+        // query string, never a JSON body (Alamofire rejects "GET with body data",
+        // which broke Google autocomplete after the migration). Force URL encoding
+        // for those methods regardless of `requestEncoding` (meant for POST/PUT bodies).
+        let encoding: AFOParameterEncoding = (method == .get || method == .head) ? .URLDefault : requestEncoding
         let request = session().request(resolvedURL(URLString), method: method, parameters: parameters,
-                                        encoding: requestEncoding, headers: merged)
+                                        encoding: encoding, headers: merged)
         request.removesKeysWithNullValues = removesKeysWithNullValues
         if let validation = validation { request.validateWithConfig(validation) }
         if let progress = progress { request.uploadProgress(progress) }
