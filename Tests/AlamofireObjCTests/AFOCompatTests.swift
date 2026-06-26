@@ -65,6 +65,28 @@ final class AFOCompatTests: XCTestCase {
         wait(for: [exp], timeout: 5)
     }
 
+    func testPostAcceptsTopLevelJSONArrayBody() {
+        // Regression: completing a treatment POSTs a top-level JSON array (a list of pin
+        // completions). AFNetworking took `id`; the first port narrowed the body to
+        // [String: Any] and crashed bridging the NSArray. The array must serialise as the body.
+        StubURLProtocol.handler = { req in TestSupport.jsonResponse(for: req, body: Data("{}".utf8)) }
+        let mgr = manager()
+        let exp = expectation(description: "array-post")
+
+        let payload: [[String: Any]] = [["pinID": 1, "marked": 1], ["pinID": 2, "marked": 0]]
+        mgr.post("/proposal/11199/item", parameters: payload, headers: nil, progress: nil,
+                 success: { _, _ in
+                     let sent = StubURLProtocol.lastBody
+                         .flatMap { try? JSONSerialization.jsonObject(with: $0) } as? [[String: Any]]
+                     XCTAssertEqual(sent?.count, 2, "top-level array body serialised, not crashed")
+                     XCTAssertEqual(sent?.first?["pinID"] as? Int, 1)
+                     XCTAssertEqual(StubURLProtocol.lastRequest?.value(forHTTPHeaderField: "Content-Type"),
+                                    "application/json")
+                     exp.fulfill()
+                 }, failure: { _, error in XCTFail("\(error)"); exp.fulfill() })
+        wait(for: [exp], timeout: 5)
+    }
+
     func testDefaultHeadersAndNullStripping() {
         StubURLProtocol.handler = { req in TestSupport.jsonResponse(for: req, body: #"{"a":1,"b":null}"#.data(using: .utf8)!) }
         let mgr = manager()

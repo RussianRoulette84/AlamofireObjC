@@ -109,6 +109,31 @@ public final class AFOSession: NSObject {
         return AFORequest(request: request)
     }
 
+    /// Issue a data request whose body is an arbitrary JSON object — a dictionary **or a
+    /// top-level array**. AFNetworking's request serializer accepted `id`, so a JSON array is a
+    /// valid body (e.g. `POST /proposal/<id>/item` with a list of treatment completions).
+    /// Alamofire's classic `request(parameters:)` only takes `[String: Any]`, so the body is
+    /// encoded here via `JSONEncoding.encode(_:withJSONObject:)`, which serialises arrays and
+    /// dictionaries alike. A non-serialisable object fails the request (delivered to the failure
+    /// block) instead of crashing.
+    @discardableResult
+    @objc public func requestJSONObject(_ url: String,
+                                        method: AFOHTTPMethod,
+                                        jsonObject: Any?,
+                                        headers: [String: String]?) -> AFORequest {
+        let request = session.request(url,
+                                      method: method.alamofire,
+                                      parameters: [String: Any]?.none,
+                                      encoding: URLEncoding.default,
+                                      headers: AFOHeaders.make(from: headers),
+                                      requestModifier: { urlRequest in
+                                          if let jsonObject = jsonObject {
+                                              urlRequest = try JSONEncoding.default.encode(urlRequest, withJSONObject: jsonObject)
+                                          }
+                                      })
+        return AFORequest(request: request)
+    }
+
     // MARK: - Data stream
 
     /// Issue a streaming request. Observe chunks via `AFODataStreamRequest.onStream:`.

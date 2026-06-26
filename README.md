@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/Version-5.12.1-orange?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-5.12.2-orange?style=for-the-badge)
 ![Swift](https://img.shields.io/badge/Swift-5.10-orange?style=for-the-badge&logo=swift&logoColor=white)
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%20·%20macOS%20·%20tvOS%20·%20watchOS-lightgrey?style=for-the-badge&logo=apple&logoColor=white)
 ![SwiftPM](https://img.shields.io/badge/SwiftPM-compatible-success?style=for-the-badge&logo=swift&logoColor=white)
@@ -81,7 +81,7 @@ pod 'AlamofireObjC', '~> 5.12'
 
 ### Swift Package Manager
 ```
-https://github.com/RussianRoulette84/AlamofireObjC.git  →  from: 5.12.1
+https://github.com/RussianRoulette84/AlamofireObjC.git  →  from: 5.12.2
 ```
 
 ### Carthage

@@ -42,7 +42,7 @@ public final class AFORequestOperation: AFOAsynchronousOperation, @unchecked Sen
     @objc public static func operation(session: AFOSession,
                                        method: AFOHTTPMethod,
                                        URLString: String,
-                                       parameters: [String: Any]?,
+                                       parameters: Any?,
                                        encoding: AFOParameterEncoding,
                                        headers: [String: String]?,
                                        userInfo: Any?,
@@ -51,8 +51,13 @@ public final class AFORequestOperation: AFOAsynchronousOperation, @unchecked Sen
                                        success: Success?,
                                        failure: Failure?) -> AFORequestOperation {
         AFORequestOperation(builder: {
-            session.request(URLString, method: method, parameters: parameters,
-                            encoding: encoding, headers: headers)
+            // Top-level JSON array body (AFNetworking `id` parity) → manual JSON encoder.
+            // Dictionaries / nil keep the original encoded path.
+            if encoding == .JSON, parameters != nil, !(parameters is [String: Any]) {
+                return session.requestJSONObject(URLString, method: method, jsonObject: parameters, headers: headers)
+            }
+            return session.request(URLString, method: method, parameters: parameters as? [String: Any],
+                                   encoding: encoding, headers: headers)
         }, userInfo: userInfo,
            uploadProgress: uploadProgress, downloadProgress: downloadProgress,
            success: success, failure: failure)

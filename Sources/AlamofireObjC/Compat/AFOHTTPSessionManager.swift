@@ -56,37 +56,37 @@ public final class AFOHTTPSessionManager: NSObject {
     // MARK: - Verb methods
 
     @discardableResult
-    @objc public func get(_ URLString: String, parameters: [String: Any]?, headers: [String: String]?,
+    @objc public func get(_ URLString: String, parameters: Any?, headers: [String: String]?,
                           progress: ((Progress) -> Void)?, success: Success?, failure: Failure?) -> AFORequest {
         perform(.get, URLString, parameters, headers, progress, success, failure)
     }
 
     @discardableResult
-    @objc public func post(_ URLString: String, parameters: [String: Any]?, headers: [String: String]?,
+    @objc public func post(_ URLString: String, parameters: Any?, headers: [String: String]?,
                            progress: ((Progress) -> Void)?, success: Success?, failure: Failure?) -> AFORequest {
         perform(.post, URLString, parameters, headers, progress, success, failure)
     }
 
     @discardableResult
-    @objc public func put(_ URLString: String, parameters: [String: Any]?, headers: [String: String]?,
+    @objc public func put(_ URLString: String, parameters: Any?, headers: [String: String]?,
                           success: Success?, failure: Failure?) -> AFORequest {
         perform(.put, URLString, parameters, headers, nil, success, failure)
     }
 
     @discardableResult
-    @objc public func patch(_ URLString: String, parameters: [String: Any]?, headers: [String: String]?,
+    @objc public func patch(_ URLString: String, parameters: Any?, headers: [String: String]?,
                             success: Success?, failure: Failure?) -> AFORequest {
         perform(.patch, URLString, parameters, headers, nil, success, failure)
     }
 
     @discardableResult
-    @objc public func delete(_ URLString: String, parameters: [String: Any]?, headers: [String: String]?,
+    @objc public func delete(_ URLString: String, parameters: Any?, headers: [String: String]?,
                              success: Success?, failure: Failure?) -> AFORequest {
         perform(.delete, URLString, parameters, headers, nil, success, failure)
     }
 
     @discardableResult
-    @objc public func head(_ URLString: String, parameters: [String: Any]?, headers: [String: String]?,
+    @objc public func head(_ URLString: String, parameters: Any?, headers: [String: String]?,
                            success: Success?, failure: Failure?) -> AFORequest {
         perform(.head, URLString, parameters, headers, nil, success, failure)
     }
@@ -124,7 +124,7 @@ public final class AFOHTTPSessionManager: NSObject {
         return URLString
     }
 
-    private func perform(_ method: AFOHTTPMethod, _ URLString: String, _ parameters: [String: Any]?,
+    private func perform(_ method: AFOHTTPMethod, _ URLString: String, _ parameters: Any?,
                          _ headers: [String: String]?, _ progress: ((Progress) -> Void)?,
                          _ success: Success?, _ failure: Failure?) -> AFORequest {
         var merged = defaultHeaders
@@ -134,9 +134,20 @@ public final class AFOHTTPSessionManager: NSObject {
         // query string, never a JSON body (Alamofire rejects "GET with body data",
         // which broke Google autocomplete after the migration). Force URL encoding
         // for those methods regardless of `requestEncoding` (meant for POST/PUT bodies).
-        let encoding: AFOParameterEncoding = (method == .get || method == .head) ? .URLDefault : requestEncoding
-        let request = session().request(resolvedURL(URLString), method: method, parameters: parameters,
+        let isQuery = (method == .get || method == .head)
+        let encoding: AFOParameterEncoding = isQuery ? .URLDefault : requestEncoding
+        let resolved = resolvedURL(URLString)
+
+        let request: AFORequest
+        if !isQuery, encoding == .JSON, parameters != nil, !(parameters is [String: Any]) {
+            // Top-level JSON array (or other non-dictionary JSON) body. AFNetworking accepted
+            // `id` here; Alamofire's classic encoders only take [String: Any], so route these
+            // through the manual JSON encoder. Dictionaries keep the original path untouched.
+            request = session().requestJSONObject(resolved, method: method, jsonObject: parameters, headers: merged)
+        } else {
+            request = session().request(resolved, method: method, parameters: parameters as? [String: Any],
                                         encoding: encoding, headers: merged)
+        }
         request.removesKeysWithNullValues = removesKeysWithNullValues
         if let validation = validation { request.validateWithConfig(validation) }
         if let progress = progress { request.uploadProgress(progress) }

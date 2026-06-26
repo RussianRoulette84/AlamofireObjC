@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'AlamofireObjC'
-  s.version          = '5.12.1'
+  s.version          = '5.12.2'
   s.summary          = 'An Objective-C bridge over Alamofire 5 — use Alamofire from pure ObjC.'
 
   s.description      = <<-DESC
